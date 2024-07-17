@@ -24,12 +24,24 @@ export class Repairs extends BaseEntity {
         default: RepairsStatus.PENDING
     })
     status: RepairsStatus;
-
+    
     @Column({
         type: "int",
         nullable: false,
     })
     user_id: number;
+    
+    @Column({
+        type: "int",
+        nullable: false,
+    })
+    motorsNumber: number;
+
+    @Column({
+        type: "text",
+        nullable: false,
+    })
+    description: string;
 
     @CreateDateColumn({})
     created_at: Date;

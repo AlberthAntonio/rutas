@@ -5,7 +5,7 @@ enum UserRol {
     CLIENT = "CLIENT"
 }
 
-enum UserStatus {
+enum Status {
     ACTIVE = "ACTIVE",
     DISABLED = "DISABLED"
 }
@@ -31,6 +31,12 @@ export class User extends BaseEntity {
     email: string;
 
     @Column({
+        type: 'boolean',
+        default: false
+    })
+    emailValidated: boolean;
+
+    @Column({
         type: "varchar",
         nullable: false,
         length: 255
@@ -38,18 +44,18 @@ export class User extends BaseEntity {
     password: string;
 
     @Column({
-        enum : UserRol,
-        nullable: false,
+        type: 'enum',
+        enum: UserRol,
         default: UserRol.CLIENT
     })
     rol: UserRol;
 
     @Column({
-        enum : UserStatus,
-        nullable: false,
-        default: UserStatus.ACTIVE
+        type: 'enum',
+        enum: Status,
+        default: Status.ACTIVE,
     })
-    status: UserStatus;
+    status: Status; 
 
     @CreateDateColumn({})
     created_at: Date;

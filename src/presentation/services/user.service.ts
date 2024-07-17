@@ -1,18 +1,23 @@
 import { User } from "../../data";
+import { CreateUserDTO } from "../../domain/dtos/users/create-use.dto";
+import { CustomError } from "../../domain/errors/custom.errors";
+import { AuthService } from "./auth.service";
 
 enum UserRol {
     EMPLOYEE = "EMPLOYEE",
     CLIENT = "CLIENT"
 }
 
-enum UserStatus {
+enum Status {
     ACTIVE = "ACTIVE",
     DISABLED = "DISABLED"
 }
 
 export class UserService {
 
-    constructor() {
+    constructor(
+        private readonly authService: AuthService,
+    ) {
 
     }
 
@@ -20,7 +25,7 @@ export class UserService {
         try {
             const users = await User.find({
                 where: {
-                    status: UserStatus.ACTIVE
+                    status: Status.ACTIVE
                 }
             })
             return users;
@@ -34,7 +39,7 @@ export class UserService {
             const user = await User.findOne({
                 where: {
                     id: id,
-                    status: UserStatus.ACTIVE
+                    status: Status.ACTIVE
                 }
             })
             if (!user){
@@ -46,19 +51,31 @@ export class UserService {
         }
     }
 
-    async createUser(userData: any) {
-        const user = new User();
+    async createUser(userData: CreateUserDTO) {
+        const registerUserDto = {
+            name: userData.name.toLowerCase().trim(),
+            email: userData.email.toLowerCase().trim(),
+            password: userData.password.trim()
+        };
 
-        user.name = userData.name.toLowerCase().trim();
-        user.email = userData.email.toLowerCase().trim();
-        user.password = userData.password.trim();
-        user.rol = userData.CLIENT;
-        user.status = userData.ACTIVE;
         try {
-            return await user.save();
-        } catch (error) {
-            console.log(error)
+            return await this.authService.register(registerUserDto);
+        } catch (error: any) {
+            return CustomError.badRequest(error.message);
         }
+
+        // const user = new User();
+
+        // user.name = userData.name.toLowerCase().trim();
+        // user.email = userData.email.toLowerCase().trim();
+        // user.password = userData.password.trim();
+        // user.rol = UserRol.CLIENT;
+        // user.status = Status.ACTIVE;
+        // try {
+        //     return await user.save();
+        // } catch (error) {
+        //     console.log(error)
+        // }
     }
 
     async refreshList(userData:any ,id: number) {
@@ -70,21 +87,19 @@ export class UserService {
             await user.save();
             return user;
         } catch (error) {
-            console.log(error);
-            throw new Error('internal server error')
+            throw CustomError.internalServer('Internal server error');
         }
     }
 
     async disableUser(id: number) {
         const user = await this.getUserById(id);
 
-        user.status = UserStatus.DISABLED;
+        user.status = Status.DISABLED;
         try {
             await user.save();
             return user;
         } catch (error) {
-            console.log(error);
-            throw new Error('internal server error')
+            throw CustomError.internalServer('Internal server error');
         } 
     }
     

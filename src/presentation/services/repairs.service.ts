@@ -1,4 +1,5 @@
 import { Repairs, User } from "../../data";
+import { CustomError } from "../../domain/errors/custom.errors";
 
 enum RepairsStatus {
     PENDING = "PENDING",
@@ -8,13 +9,9 @@ enum RepairsStatus {
 
 export class RepairsService {
 
-    constructor() {
-
-    }
-
     async getPendingRepairs() {
         try {
-            const repairs = await Repairs.findOne({
+            const repairs = await Repairs.find({
                 where: {
                     status: RepairsStatus.PENDING
                 }
@@ -34,9 +31,8 @@ export class RepairsService {
                     status: RepairsStatus.PENDING
                 }
             })
-            if (!repairs){
-                throw new Error("User already exists")
-            }
+            if (!repairs) throw new Error("User already exists")
+                
             return repairs;
         } catch (error:any) {
             throw new Error('internal server error')
@@ -52,7 +48,7 @@ export class RepairsService {
         try {
             return await repair.save();
         } catch (error) {
-            console.log(error)
+            throw CustomError.internalServer('Internal server error');
         }
     }
 
