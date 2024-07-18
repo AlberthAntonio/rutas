@@ -58,24 +58,7 @@ export class UserService {
             password: userData.password.trim()
         };
 
-        try {
-            return await this.authService.register(registerUserDto);
-        } catch (error: any) {
-            return CustomError.badRequest(error.message);
-        }
-
-        // const user = new User();
-
-        // user.name = userData.name.toLowerCase().trim();
-        // user.email = userData.email.toLowerCase().trim();
-        // user.password = userData.password.trim();
-        // user.rol = UserRol.CLIENT;
-        // user.status = Status.ACTIVE;
-        // try {
-        //     return await user.save();
-        // } catch (error) {
-        //     console.log(error)
-        // }
+        return await this.authService.register(registerUserDto);
     }
 
     async refreshList(userData:any ,id: number) {

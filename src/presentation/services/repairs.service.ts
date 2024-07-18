@@ -1,4 +1,5 @@
 import { Repairs, User } from "../../data";
+import { CreateRepairDTO } from "../../domain/dtos/repairs/create-repair.dto";
 import { CustomError } from "../../domain/errors/custom.errors";
 
 enum RepairsStatus {
@@ -27,7 +28,7 @@ export class RepairsService {
         try {
             const repairs = await Repairs.findOne({
                 where: {
-                    user_id: userId,
+                    userId: userId,
                     status: RepairsStatus.PENDING
                 }
             })
@@ -39,12 +40,14 @@ export class RepairsService {
         }
     }
 
-    async createRepairs(repairData: any) {
+    async createRepairs(repairData: CreateRepairDTO) {
         const repair = new Repairs();
 
         repair.date = repairData.date;
+        repair.userId = repairData.userId;
+        repair.description = repairData.description;
+        repair.motorsNumber = repairData.motorsNumber;
         repair.status = RepairsStatus.PENDING;
-        repair.user_id = repairData.userId;
         try {
             return await repair.save();
         } catch (error) {

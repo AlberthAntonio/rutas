@@ -4,6 +4,7 @@ import { error } from "console";
 import { CustomError } from "../../domain/errors/custom.errors";
 import { CreateUserDTO } from "../../domain/dtos/users/create-use.dto";
 import { UpdateUserDTO } from "../../domain/dtos/users/update-user.dto";
+import { RegisterUserDto } from "../../domain/dtos/auth/register-user.dto";
 
 export class UserController {
 
@@ -44,7 +45,7 @@ export class UserController {
     }
 
     createNewUser = (req: Request, res: Response) => {
-        const [error, user] = CreateUserDTO.create(req.body);
+        const [error, user] = RegisterUserDto.create(req.body);
 
         if (error) return res.status(422).json({ error: error });
 

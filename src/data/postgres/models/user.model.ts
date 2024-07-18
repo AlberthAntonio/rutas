@@ -1,4 +1,5 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BaseEntity, BeforeInsert, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { bcryptAdapter } from "../../../config";
 
 enum UserRol {
     EMPLOYEE = "EMPLOYEE",
@@ -62,5 +63,10 @@ export class User extends BaseEntity {
 
     @UpdateDateColumn({})
     updated_at: Date;
+
+    @BeforeInsert()
+    encryptPassword() {
+        this.password = bcryptAdapter.hash(this.password);
+    }
 
 }

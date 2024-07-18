@@ -16,7 +16,7 @@ export class Repairs extends BaseEntity {
         type: "date",
         nullable: false,
     })
-    date: string;
+    date: string | Date;
 
     @Column({
         enum : RepairsStatus,
@@ -29,7 +29,7 @@ export class Repairs extends BaseEntity {
         type: "int",
         nullable: false,
     })
-    user_id: number;
+    userId: number;
     
     @Column({
         type: "int",
