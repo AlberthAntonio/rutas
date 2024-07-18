@@ -1,52 +1,57 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 
 enum RepairsStatus {
-    PENDING = 'PENDING',
-    COMPLETED = 'COMPLETED',
-    CANCELLED = 'CANCELLED'
+  PENDING = "PENDING",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
 }
 
 @Entity()
 export class Repairs extends BaseEntity {
-    
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({
-        type: "date",
-        nullable: false,
-    })
-    date: string | Date;
+  @Column({
+    type: "date",
+    nullable: false,
+  })
+  date: string | Date;
 
-    @Column({
-        enum : RepairsStatus,
-        nullable: false,
-        default: RepairsStatus.PENDING
-    })
-    status: RepairsStatus;
-    
-    @Column({
-        type: "int",
-        nullable: false,
-    })
-    userId: number;
-    
-    @Column({
-        type: "int",
-        nullable: false,
-    })
-    motorsNumber: number;
+  @Column({
+    enum: RepairsStatus,
+    nullable: false,
+    default: RepairsStatus.PENDING,
+  })
+  status: RepairsStatus;
 
-    @Column({
-        type: "text",
-        nullable: false,
-    })
-    description: string;
+  @Column({
+    type: "int",
+    nullable: false,
+  })
+  userId: number;
 
-    @CreateDateColumn({})
-    created_at: Date;
+  @Column({
+    type: "int",
+    nullable: false,
+  })
+  motorsNumber: number;
 
-    @UpdateDateColumn({})
-    updated_at: Date;
+  @Column({
+    type: "text",
+    nullable: false,
+  })
+  description: string;
 
+  @CreateDateColumn({})
+  created_at: Date;
+
+  @UpdateDateColumn({})
+  updated_at: Date;
 }

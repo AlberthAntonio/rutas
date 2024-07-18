@@ -6,33 +6,29 @@ import { envs } from "../../config";
 import { EmailService } from "../services/email.service";
 import { AuthController } from "../auth/controller";
 export class UsersRoutes {
+  static get routes(): Router {
+    const router = Router();
 
-    static get routes(): Router {
+    const emailService = new EmailService(
+      envs.MAILER_SERVICE,
+      envs.MAILER_EMAIL,
+      envs.MAILER_SECRET_KEY,
+      envs.SEND_EMAIL
+    );
 
-        const router = Router();
+    const authService = new AuthService(emailService);
+    const Authcontroller = new AuthController(authService);
+    const userService = new UserService(authService);
+    const controller = new UserController(userService);
 
-        const emailService = new EmailService(
-            envs.MAILER_SERVICE,
-            envs.MAILER_EMAIL,
-            envs.MAILER_SECRET_KEY,
-            envs.SEND_EMAIL
-        );
+    router.get("/", controller.getAllUsers);
+    router.get("/:id", controller.getUserById);
+    router.post("/", controller.createNewUser);
+    router.patch("/:id", controller.refreshListUsers);
+    router.delete("/:id", controller.disableUser);
 
-        const authService = new AuthService(emailService);
-        const Authcontroller = new AuthController(authService);
-        const userService = new UserService(authService);
-        const controller = new UserController(userService);
+    router.post("/login", Authcontroller.login);
 
-
-        router.get("/", controller.getAllUsers)
-        router.get("/:id", controller.getUserById)
-        router.post("/", controller.createNewUser)
-        router.patch("/:id", controller.refreshListUsers)
-        router.delete("/:id", controller.disableUser)
-
-        router.post("/login", Authcontroller.login);
-        
-        return router;
-    }
-
+    return router;
+  }
 }

@@ -7,74 +7,65 @@ import { UpdateUserDTO } from "../../domain/dtos/users/update-user.dto";
 import { RegisterUserDto } from "../../domain/dtos/auth/register-user.dto";
 
 export class UserController {
+  constructor(private readonly userService: UserService) {}
 
-    constructor(
-        private readonly userService: UserService
-    ) {}
-
-    private handleError = (error: unknown, res: Response) => {
-        console.log(error)
-        if(error instanceof CustomError){
-            return res.status(error.status).json({message: error.message});
-        }
-
-        return res.status(500).json({message: "Internal Server Error"});
+  private handleError = (error: unknown, res: Response) => {
+    console.log(error);
+    if (error instanceof CustomError) {
+      return res.status(error.status).json({ message: error.message });
     }
 
-    getAllUsers = (req: Request, res: Response) => {
-        
-        this.userService.getAllUsers()
-            .then(users => {
-                return res.status(200).json(users);
-            })
-            .catch((error: unknown) => this.handleError(error, res));
-    }
+    return res.status(500).json({ message: "Internal Server Error" });
+  };
 
-    getUserById = (req: Request, res: Response) => {
-        const { id } = req.params;
-        if (isNaN(+id)) {
-            return res.status(400).json({ message: "invalid id" })
-        }
+  getAllUsers = (req: Request, res: Response) => {
+    this.userService
+      .getAllUsers()
+      .then((users) => {return res.status(200).json(users)})
+      .catch((error: unknown) => this.handleError(error, res));
+  };
 
-        this.userService.getUserById(+id)
-            .then(user_id => {
-                return res.status(200).json(user_id);
-            })
-            .catch((error: unknown) => this.handleError(error, res));
-        
-    }
+  getUserById = (req: Request, res: Response) => {
+    const { id } = req.params;
+    if (isNaN(+id)) {return res.status(400).json({ message: "invalid id" })}
 
-    createNewUser = (req: Request, res: Response) => {
-        const [error, user] = RegisterUserDto.create(req.body);
+    this.userService
+      .getUserById(+id)
+      .then((user_id) => {return res.status(200).json(user_id)})
+      .catch((error: unknown) => this.handleError(error, res));
+  };
 
-        if (error) return res.status(422).json({ error: error });
+  createNewUser = (req: Request, res: Response) => {
+    const [error, user] = RegisterUserDto.create(req.body);
 
-        this.userService.createUser(user!)
-            .then(user => res.status(201).json(user))
-            .catch((error: unknown) => this.handleError(error, res))
-    }
+    if (error) return res.status(422).json({ error: error });
 
-    refreshListUsers = (req: Request, res: Response) => {
-        const { id } = req.params;
-        if (isNaN(+id)) return res.status(422).json({ message: "invalid id" })
+    this.userService
+      .createUser(user!)
+      .then((user) => res.status(201).json(user))
+      .catch((error: unknown) => this.handleError(error, res));
+  };
 
-        const [error, user] = UpdateUserDTO.create(req.body);
-        if (error) return res.status(422).json({ message: error });
+  refreshListUsers = (req: Request, res: Response) => {
+    const { id } = req.params;
+    if (isNaN(+id)) return res.status(422).json({ message: "invalid id" });
 
-        this.userService.refreshList(user!, +id)
-            .then(user => res.status(200).json(user))
-            .catch((error: unknown) => this.handleError(error, res))
-    }
+    const [error, user] = UpdateUserDTO.create(req.body);
+    if (error) return res.status(422).json({ message: error });
 
-    disableUser = (req: Request, res: Response) => {
-        const { id } = req.params;
-        if (isNaN(+id)) return res.status(422).json({ message: "invalid id" })
+    this.userService
+      .refreshList(user!, +id)
+      .then((user) => res.status(200).json(user))
+      .catch((error: unknown) => this.handleError(error, res));
+  };
 
-        this.userService.disableUser(+id)
-            .then(user => res.status(200).json(user))
-            .catch((error: unknown) => this.handleError(error, res));
-    }
+  disableUser = (req: Request, res: Response) => {
+    const { id } = req.params;
+    if (isNaN(+id)) return res.status(422).json({ message: "invalid id" });
 
-
-
+    this.userService
+      .disableUser(+id)
+      .then((user) => res.status(200).json(user))
+      .catch((error: unknown) => this.handleError(error, res));
+  };
 }

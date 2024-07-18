@@ -4,86 +4,80 @@ import { CustomError } from "../../domain/errors/custom.errors";
 import { AuthService } from "./auth.service";
 
 enum UserRol {
-    EMPLOYEE = "EMPLOYEE",
-    CLIENT = "CLIENT"
+  EMPLOYEE = "EMPLOYEE",
+  CLIENT = "CLIENT",
 }
 
 enum Status {
-    ACTIVE = "ACTIVE",
-    DISABLED = "DISABLED"
+  ACTIVE = "ACTIVE",
+  DISABLED = "DISABLED",
 }
 
 export class UserService {
+  constructor(private readonly authService: AuthService) {}
 
-    constructor(
-        private readonly authService: AuthService,
-    ) {
-
+  async getAllUsers() {
+    try {
+      const users = await User.find({
+        where: {
+          status: Status.ACTIVE,
+        },
+      });
+      return users;
+    } catch (error: any) {
+      throw new Error("internal server error");
     }
+  }
 
-    async getAllUsers() {
-        try {
-            const users = await User.find({
-                where: {
-                    status: Status.ACTIVE
-                }
-            })
-            return users;
-        } catch (error: any) {
-            throw new Error('internal server error')
-        }
+  async getUserById(id: number) {
+    try {
+      const user = await User.findOne({
+        where: {
+          id: id,
+          status: Status.ACTIVE,
+        },
+      });
+      if (!user) {
+        throw new Error("User already exists");
+      }
+      return user;
+    } catch (error: any) {
+      throw new Error("internal server error");
     }
+  }
 
-    async getUserById(id: number) {
-        try {
-            const user = await User.findOne({
-                where: {
-                    id: id,
-                    status: Status.ACTIVE
-                }
-            })
-            if (!user){
-                throw new Error("User already exists")
-            }
-            return user;
-        } catch (error: any) {
-            throw new Error('internal server error')
-        }
+  async createUser(userData: CreateUserDTO) {
+    const registerUserDto = {
+      name: userData.name.toLowerCase().trim(),
+      email: userData.email.toLowerCase().trim(),
+      password: userData.password.trim(),
+    };
+
+    return await this.authService.register(registerUserDto);
+  }
+
+  async refreshList(userData: any, id: number) {
+    const user = await this.getUserById(id);
+    user.name = userData.name.toLowerCase().trim();
+    user.email = userData.email.toLowerCase().trim();
+
+    try {
+      await user.save();
+      return user;
+    } catch (error) {
+      throw CustomError.internalServer("Internal server error");
     }
+  }
 
-    async createUser(userData: CreateUserDTO) {
-        const registerUserDto = {
-            name: userData.name.toLowerCase().trim(),
-            email: userData.email.toLowerCase().trim(),
-            password: userData.password.trim()
-        };
+  async disableUser(id: number) {
+    const user = await this.getUserById(id);
 
-        return await this.authService.register(registerUserDto);
+    user.status = Status.DISABLED;
+    try {
+      await user.save();
+      return user;
+    } catch (error) {
+      throw CustomError.internalServer("Internal server error");
     }
-
-    async refreshList(userData:any ,id: number) {
-        const user = await this.getUserById(id);
-        user.name = userData.name.toLowerCase().trim();
-        user.email = userData.email.toLowerCase().trim();
-
-        try {
-            await user.save();
-            return user;
-        } catch (error) {
-            throw CustomError.internalServer('Internal server error');
-        }
-    }
-
-    async disableUser(id: number) {
-        const user = await this.getUserById(id);
-
-        user.status = Status.DISABLED;
-        try {
-            await user.save();
-            return user;
-        } catch (error) {
-            throw CustomError.internalServer('Internal server error');
-        } 
-    }
-    
+  }
 }
