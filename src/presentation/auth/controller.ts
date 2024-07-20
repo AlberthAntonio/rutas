@@ -17,7 +17,6 @@ export class AuthController {
 
   register = async (req: Request, res: Response) => {
     const [error, registerUserDto] = RegisterUserDto.create(req.body);
-
     if (error) return res.status(422).json({ message: error });
 
     this.authService
@@ -28,7 +27,6 @@ export class AuthController {
 
   login = async (req: Request, res: Response) => {
     const [error, loginUseDto] = LoginUserDTO.create(req.body);
-
     if (error) return res.status(422).json({ error: error });
 
     this.authService

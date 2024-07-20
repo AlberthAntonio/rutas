@@ -50,11 +50,11 @@ export class UserController {
     const { id } = req.params;
     if (isNaN(+id)) return res.status(422).json({ message: "invalid id" });
 
-    const [error, user] = UpdateUserDTO.create(req.body);
+    const [error, userUpdate] = UpdateUserDTO.create(req.body);
     if (error) return res.status(422).json({ message: error });
 
     this.userService
-      .refreshList(user!, +id)
+      .refreshList(userUpdate!, +id)
       .then((user) => res.status(200).json(user))
       .catch((error: unknown) => this.handleError(error, res));
   };

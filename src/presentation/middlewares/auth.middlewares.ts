@@ -17,7 +17,6 @@ export class AuthMiddleware {
   static async protected(req: Request, res: Response, next: NextFunction) {
     const authorization = req.header("Authorization");
 
-
     if ( !authorization ) return res.status(401).json({ message: "No token provided" });
     if ( !authorization.startsWith("Bearer ") ) return res.status(401).json({ message: "invalid token" });
     const token = authorization.split(" ").at(1) || "";
@@ -51,6 +50,4 @@ export class AuthMiddleware {
       next();
     }
   }
-
-  
 }

@@ -5,6 +5,7 @@ import { AuthService } from "../services/auth.service";
 import { envs } from "../../config";
 import { EmailService } from "../services/email.service";
 import { AuthController } from "../auth/controller";
+import { AuthMiddleware } from "../middlewares/auth.middlewares";
 export class UsersRoutes {
   static get routes(): Router {
     const router = Router();
@@ -24,8 +25,8 @@ export class UsersRoutes {
     router.get("/", controller.getAllUsers);
     router.get("/:id", controller.getUserById);
     router.post("/", controller.createNewUser);
-    router.patch("/:id", controller.refreshListUsers);
-    router.delete("/:id", controller.disableUser);
+    router.patch("/:id", AuthMiddleware.protected, controller.refreshListUsers);
+    router.delete("/:id", AuthMiddleware.protected, controller.disableUser);
 
     router.post("/login", Authcontroller.login);
 

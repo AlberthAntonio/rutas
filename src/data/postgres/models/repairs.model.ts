@@ -3,9 +3,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+import { User } from "./user.model";
 
 enum RepairsStatus {
   PENDING = "PENDING",
@@ -31,11 +33,8 @@ export class Repairs extends BaseEntity {
   })
   status: RepairsStatus;
 
-  @Column({
-    type: "int",
-    nullable: false,
-  })
-  userId: number;
+  @ManyToOne(() => User, (user) => user.repairs)
+  user: User
 
   @Column({
     type: "int",

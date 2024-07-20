@@ -1,6 +1,8 @@
+import { In } from "typeorm";
 import { Repairs, User } from "../../data";
 import { CreateRepairDTO } from "../../domain/dtos/repairs/create-repair.dto";
 import { CustomError } from "../../domain/errors/custom.errors";
+import { UserService } from "./user.service";
 
 enum RepairsStatus {
   PENDING = "PENDING",
@@ -9,11 +11,16 @@ enum RepairsStatus {
 }
 
 export class RepairsService {
+  constructor (
+    private readonly UserService: UserService
+  ){}
+
+
   async getPendingRepairs() {
     try {
       const repairs = await Repairs.find({
         where: {
-          status: RepairsStatus.PENDING,
+          status: In([RepairsStatus.PENDING, RepairsStatus.COMPLETED]),
         },
       });
       return repairs;
@@ -26,7 +33,7 @@ export class RepairsService {
     try {
       const repairs = await Repairs.findOne({
         where: {
-          userId: userId,
+          user: {id : userId},
           status: RepairsStatus.PENDING,
         },
       });
@@ -39,10 +46,14 @@ export class RepairsService {
   }
 
   async createRepairs(repairData: CreateRepairDTO) {
+    const userPromise = this.UserService.getUserById(repairData.userId);
+
+    const [user] = await Promise.all([userPromise]);
+
     const repair = new Repairs();
 
     repair.date = repairData.date;
-    repair.userId = repairData.userId;
+    repair.user = user;
     repair.description = repairData.description;
     repair.motorsNumber = repairData.motorsNumber;
     repair.status = RepairsStatus.PENDING;

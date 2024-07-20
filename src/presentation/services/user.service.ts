@@ -1,5 +1,6 @@
 import { User } from "../../data";
 import { CreateUserDTO } from "../../domain/dtos/users/create-use.dto";
+import { UpdateUserDTO } from "../../domain/dtos/users/update-user.dto";
 import { CustomError } from "../../domain/errors/custom.errors";
 import { AuthService } from "./auth.service";
 
@@ -14,7 +15,9 @@ enum Status {
 }
 
 export class UserService {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService
+  ) {}
 
   async getAllUsers() {
     try {
@@ -56,7 +59,7 @@ export class UserService {
     return await this.authService.register(registerUserDto);
   }
 
-  async refreshList(userData: any, id: number) {
+  async refreshList(userData: UpdateUserDTO, id: number) {
     const user = await this.getUserById(id);
     user.name = userData.name.toLowerCase().trim();
     user.email = userData.email.toLowerCase().trim();
